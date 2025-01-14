@@ -2,6 +2,7 @@ import argparse
 import os
 
 def create_parser():
+    # Create an argument parser for the command-line interface
     parser = argparse.ArgumentParser(description="Command-line Todo List App")
     parser.add_argument("-a", "--add", metavar="", help="Add a new task")
     parser.add_argument("-l", "--list", action="store_true", help="List all tasks")
@@ -9,19 +10,22 @@ def create_parser():
     return parser
 
 def add_task(task):
+    # Add a new task to the tasks.txt file
     with open("tasks.txt", "a") as file:
-      file.write(task + "\n")
+        file.write(task + "\n")
 
 def list_tasks():
+    # List all tasks from the tasks.txt file
     if os.path.exists("tasks.txt"):
         with open("tasks.txt", "r") as file:
             tasks = file.readlines()
         for index, task in enumerate(tasks, start=1):
-                print(f"{index}. {task.strip()}")
+            print(f"{index}. {task.strip()}")
     else:
         print("No tasks found.")
-      
+
 def remove_task(index):
+    # Remove a task by index from the tasks.txt file
     if os.path.exists("tasks.txt"):
         with open("tasks.txt", "r") as file:
             tasks = file.readlines()
@@ -29,23 +33,3 @@ def remove_task(index):
             for i, task in enumerate(tasks, start=1):
                 if i != index:
                     file.write(task)
-        print("Task removed successfully.")
-    else:
-        print("No tasks found.")
-
-
-def main():
-    parser = create_parser()
-    args = parser.parse_args()
-
-    if args.add:
-        add_task(args.add)
-    elif args.list:
-        list_tasks()
-    elif args.remove:
-        remove_task(int(args.remove))
-    else:
-        parser.print_help()
-
-if __name__ == "__main__":
-    main()
