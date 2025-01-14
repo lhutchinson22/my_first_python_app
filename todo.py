@@ -9,27 +9,57 @@ def create_parser():
     parser.add_argument("-r", "--remove", metavar="", help="Remove a task by index")
     return parser
 
-def add_task(task):
-    # Add a new task to the tasks.txt file
-    with open("tasks.txt", "a") as file:
-        file.write(task + "\n")
+def add_task(task, tasks):
+    # Add a new task to the tasks list
+    tasks.append(task)
+    save_tasks(tasks)
 
-def list_tasks():
-    # List all tasks from the tasks.txt file
-    if os.path.exists("tasks.txt"):
-        with open("tasks.txt", "r") as file:
-            tasks = file.readlines()
+def list_tasks(tasks):
+    # List all tasks from the tasks list
+    if tasks:
         for index, task in enumerate(tasks, start=1):
-            print(f"{index}. {task.strip()}")
+            print(f"{index}. {task}")
     else:
         print("No tasks found.")
 
-def remove_task(index):
-    # Remove a task by index from the tasks.txt file
+def remove_task(index, tasks):
+    # Remove a task by index from the tasks list
+    if 0 <= index < len(tasks):
+        tasks.pop(index)
+        save_tasks(tasks)
+    else:
+        print("Invalid task index.")
+
+def load_tasks():
+    # Load tasks from the tasks.txt file
     if os.path.exists("tasks.txt"):
         with open("tasks.txt", "r") as file:
-            tasks = file.readlines()
-        with open("tasks.txt", "w") as file:
-            for i, task in enumerate(tasks, start=1):
-                if i != index:
-                    file.write(task)
+            tasks = file.read().splitlines()
+    else:
+        tasks = []
+    return tasks
+
+def save_tasks(tasks):
+    # Save tasks to the tasks.txt file
+    with open("tasks.txt", "w") as file:
+        for task in tasks:
+            file.write(task + "\n")
+
+def main():
+    parser = create_parser()
+    args = parser.parse_args()
+    tasks = load_tasks()
+
+    if args.add:
+        add_task(args.add, tasks)
+    elif args.list:
+        list_tasks(tasks)
+    elif args.remove:
+        try:
+            index = int(args.remove) - 1
+            remove_task(index, tasks)
+        except ValueError:
+            print("Please provide a valid task index.")
+
+if __name__ == '__main__':
+    main()
